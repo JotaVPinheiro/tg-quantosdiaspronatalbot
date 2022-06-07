@@ -70,7 +70,7 @@ app.post(URI, async (req, res) => {
 
       await setDescription(
         getChristmasMessage() +
-          (message.chat.id === process.env.SECRET_ID
+          (message.chat.id == process.env.SECRET_ID
             ? process.env.SECRET_DESC
             : params),
         message.chat.id
@@ -88,7 +88,7 @@ app.post(URI, async (req, res) => {
         }
       }
 
-      console.error(error);
+      // console.error(error);
     }
   }
 
