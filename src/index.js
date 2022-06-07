@@ -15,6 +15,28 @@ const init = async () => {
   console.log(res.data);
 };
 
+const calcDaysTillChristmas = () => {
+  const millisecondsToDays = 1000 * 60 * 60 * 24;
+  const today = new Date();
+  const thisChristmas = new Date(today.getFullYear(), 11, 25);
+
+  if (today < thisChristmas)
+    return Math.ceil((thisChristmas - today) / millisecondsToDays);
+
+  const nextYearChristmas = new Date(today.getFullYear() + 1, 11, 25);
+  return Math.ceil((nextYearChristmas - today) / millisecondsToDays);
+};
+
+const getDescriptionMessage = () => {
+  const daysTillChristmas = calcDaysTillChristmas();
+
+  if (daysTillChristmas === 365) return "Feliz natal!";
+
+  if (daysTillChristmas === 1) return "Falta 1 dia para o natal!";
+
+  return `Faltam ${daysTillChristmas} dias para o natal!`;
+};
+
 app.use(express.json());
 
 app.post(URI, async (req, res) => {
@@ -30,7 +52,7 @@ app.post(URI, async (req, res) => {
       try {
         await axios.post(`${TELEGRAM_API}/setChatDescription`, {
           chat_id: data.message.chat.id,
-          description: "Descrição atualizada",
+          description: getDescriptionMessage(),
         });
       } catch (error) {
         console.error(error);
