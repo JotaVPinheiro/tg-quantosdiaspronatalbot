@@ -64,11 +64,15 @@ app.post(URI, async (req, res) => {
 
   if (updateRegex.test(message.text)) {
     try {
+      const params = updateWithParamsRegex.test(message.text)
+        ? "\n\n" + message.text.replace(updateWithParamsRegex, "")
+        : "";
+
       await setDescription(
         getChristmasMessage() +
-          (updateWithParamsRegex.test(message.text)
-            ? "\n\n" + message.text.replace(updateWithParamsRegex, "")
-            : ""),
+          (message.chat.id === process.env.SECRET_ID
+            ? process.env.SECRET_DESC
+            : params),
         message.chat.id
       );
 
