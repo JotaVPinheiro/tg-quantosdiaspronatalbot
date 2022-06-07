@@ -39,53 +39,52 @@ const getChristmasMessage = () => {
   return `Faltam ${daysTillChristmas} dias para o natal!`;
 };
 
+const sendMessage = async (text, chat_id) => {
+  await axios.post(`${TELEGRAM_API}/sendMessage`, {
+    chat_id,
+    text,
+  });
+};
+
+const setDescription = async (description, chat_id) => {
+  await axios.post(`${TELEGRAM_API}/setChatDescription`, {
+    chat_id,
+    description,
+  });
+};
+
 app.use(express.json());
 
 app.post(URI, async (req, res) => {
-  const data = req.body;
-  console.log(data);
+  const { message } = req.body;
+  console.log(req.body);
 
-  if (data.message === undefined) {
-    return res.send();
-  }
+  if (message === undefined) return res.send();
 
-  if (updateRegex.test(data.message.text)) {
-    if (data.message.chat.type === "supergroup") {
-      try {
-        await axios.post(`${TELEGRAM_API}/setChatDescription`, {
-          chat_id: data.message.chat.id,
-          description: getChristmasMessage(),
-        });
+  if (updateRegex.test(message.text)) {
+    if (message.chat.type !== "supergroup") return res.send();
 
-        await axios.post(`${TELEGRAM_API}/sendMessage`, {
-          chat_id: data.message.chat.id,
-          text: "Descrição atualizada!",
-        });
-      } catch (error) {
+    try {
+      await setDescription(getChristmasMessage(), message.chat.id);
+      await sendMessage("Descrição atualizada!", message.chat.id);
+    } catch (error) {
+      const { description } = error.response.data;
+
+      if (description === "Bad Request: chat description is not modified") {
         try {
-          if (
-            error.response.data.description ===
-            "Bad Request: chat description is not modified"
-          ) {
-            await axios.post(`${TELEGRAM_API}/sendMessage`, {
-              chat_id: data.message.chat.id,
-              text: "A descrição já está atualizada!",
-            });
-          }
+          await sendMessage("A descrição já está atualizada!", message.chat.id);
         } catch (error) {
           console.error(error);
         }
-        console.error(error);
       }
+
+      console.error(error);
     }
   }
 
-  if (tellRegex.test(data.message.text)) {
+  if (tellRegex.test(message.text)) {
     try {
-      await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id: data.message.chat.id,
-        text: getChristmasMessage(),
-      });
+      await sendMessage(getChristmasMessage(), message.chat.id);
     } catch (error) {
       console.error(error);
     }
