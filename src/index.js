@@ -11,7 +11,7 @@ const WEBHOOK_URL = SERVER_URL + URI;
 const updateRegex = /\/updatedescription(@quantosdiaspronatalbot)?/;
 const updateWithParamsRegex =
   /\/updatedescription(@quantosdiaspronatalbot)? (?=.)/;
-const tellRegex = /\/tellme/;
+const tellRegex = /\/tellme(@quantosdiaspronatalbot)?/;
 
 const init = async () => {
   const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
@@ -88,7 +88,7 @@ app.post(URI, async (req, res) => {
         }
       }
 
-      // console.error(error);
+      console.error(error);
     }
   }
 
