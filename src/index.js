@@ -3,7 +3,7 @@ const axios = require("axios");
 const express = require("express");
 const app = express();
 
-const { BOT_TOKEN, SERVER_URL, SERVER_PORT } = process.env;
+const { BOT_TOKEN, SERVER_URL, PORT } = process.env;
 const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const URI = `/webhook/${BOT_TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
@@ -93,7 +93,7 @@ app.post(URI, async (req, res) => {
   return res.send();
 });
 
-app.listen(SERVER_PORT || 5000, async () => {
-  console.log(`Server running on port ${SERVER_PORT}`);
+app.listen(PORT || 5000, async () => {
+  console.log(`Server running on port ${PORT}`);
   await init();
 });
