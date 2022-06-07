@@ -8,7 +8,9 @@ const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const URI = `/webhook/${BOT_TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
 
-const updateRegex = /\/update$|\/update@quantosdiaspronatalbot$/;
+const updateRegex =
+  /\/updatedescription$|\/updatedescription@quantosdiaspronatalbot$/;
+const tellRegex = /\/tellme$|\/tellme@quantosdiaspronatalbot$/;
 
 const init = async () => {
   const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
@@ -27,7 +29,7 @@ const calcDaysTillChristmas = () => {
   return Math.ceil((nextYearChristmas - today) / millisecondsToDays);
 };
 
-const getDescriptionMessage = () => {
+const getChristmasMessage = () => {
   const daysTillChristmas = calcDaysTillChristmas();
 
   if (daysTillChristmas === 365) return "Feliz natal!";
@@ -52,11 +54,27 @@ app.post(URI, async (req, res) => {
       try {
         await axios.post(`${TELEGRAM_API}/setChatDescription`, {
           chat_id: data.message.chat.id,
-          description: getDescriptionMessage(),
+          description: getChristmasMessage(),
+        });
+
+        await axios.post(`${TELEGRAM_API}/sendMessage`, {
+          chat_id: data.message.chat.id,
+          text: "Descrição atualizada!",
         });
       } catch (error) {
         console.error(error);
       }
+    }
+  }
+
+  if (tellRegex.test(data.message.text)) {
+    try {
+      await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        chat_id: data.message.chat.id,
+        text: getChristmasMessage(),
+      });
+    } catch (error) {
+      console.error(error);
     }
   }
 
