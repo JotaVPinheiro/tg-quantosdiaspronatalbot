@@ -33,11 +33,11 @@ const calcDaysTillChristmas = () => {
 const getChristmasMessage = () => {
   const daysTillChristmas = calcDaysTillChristmas();
 
-  if (daysTillChristmas === 365) return "Feliz natal!";
+  if (daysTillChristmas === 365) return "FELIZ NATAL!";
 
-  if (daysTillChristmas === 1) return "Falta 1 dia para o natal!";
+  if (daysTillChristmas === 1) return "FALTA 1 DIA PARA O NATAL!";
 
-  return `Faltam ${daysTillChristmas} dias para o natal!`;
+  return `FALTAM ${daysTillChristmas} DIAS PARA O NATAL!`;
 };
 
 const sendMessage = async (text, chat_id) => {
