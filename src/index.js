@@ -8,9 +8,10 @@ const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
 const URI = `/webhook/${BOT_TOKEN}`;
 const WEBHOOK_URL = SERVER_URL + URI;
 
-const updateRegex =
-  /\/updatedescription$|\/updatedescription@quantosdiaspronatalbot$/;
-const tellRegex = /\/tellme$|\/tellme@quantosdiaspronatalbot$/;
+const updateRegex = /\/updatedescription(@quantosdiaspronatalbot)?/;
+const updateWithParamsRegex =
+  /\/updatedescription(@quantosdiaspronatalbot)? (?=.)/;
+const tellRegex = /\/tellme/;
 
 const init = async () => {
   const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
@@ -62,10 +63,15 @@ app.post(URI, async (req, res) => {
   if (message === undefined) return res.send();
 
   if (updateRegex.test(message.text)) {
-    if (message.chat.type !== "supergroup") return res.send();
-
     try {
-      await setDescription(getChristmasMessage(), message.chat.id);
+      await setDescription(
+        getChristmasMessage() +
+          (updateWithParamsRegex.test(message.text)
+            ? "\n\n" + message.text.replace(updateWithParamsRegex, "")
+            : ""),
+        message.chat.id
+      );
+
       await sendMessage("Descrição atualizada!", message.chat.id);
     } catch (error) {
       const { description } = error.response.data;
@@ -94,6 +100,6 @@ app.post(URI, async (req, res) => {
 });
 
 app.listen(PORT || 5000, async () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT || 5000}`);
   await init();
 });
