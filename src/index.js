@@ -62,6 +62,19 @@ app.post(URI, async (req, res) => {
           text: "Descrição atualizada!",
         });
       } catch (error) {
+        try {
+          if (
+            error.response.data.description ===
+            "Bad Request: chat description is not modified"
+          ) {
+            await axios.post(`${TELEGRAM_API}/sendMessage`, {
+              chat_id: data.message.chat.id,
+              text: "A descrição já está atualizada!",
+            });
+          }
+        } catch (error) {
+          console.error(error);
+        }
         console.error(error);
       }
     }
